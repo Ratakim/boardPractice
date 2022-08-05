@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.board.mappers.board">
+
+	<!-- 게시물 목록 -->
+	<select id="list" resultType="com.board.vo.BoardVO">
+		select
+		no, title, content, writer, writeDate, hit
+		from board
+	</select>
+
+	<!-- 게시물 작성 -->
+	<insert id="write" parameterType="com.board.vo.BoardVO">
+		insert into
+		board(no, title, content, writer)
+		values(board_seq.nextval, #{title}, #{content}, #{writer})
+	</insert>
+	
+	<!-- 게시물 조희 -->
+	<select id="view" parameterType="int" resultType="com.board.vo.BoardVO">
+		select
+		no, title, content, writer, writeDate, hit
+		from board
+		where no = #{no}
+	</select>
+
+	<!-- 게시물 수정 -->
+	<update id="modify" parameterType="com.board.vo.BoardVO">
+		update board
+		set
+		title = #{title},
+		content = #{content},
+		writer = #{writer}
+		where no = #{no}
+	</update>
+
+
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete
+		from board
+		where no =
+		#{no}
+	</delete>
+
+	<!-- 게시물 총 갯수 -->
+	<select id="count" resultType="int">
+		select count(no) from board
+	</select>
+
+	<!-- 게시물 목록 + 페이징 -->
+	<select id="listPage" parameterType="hashMap"
+		resultType="com.board.vo.BoardVO">
+		 select no, title, content, writer, writeDate, hit
+       from (
+           select no, title, content, writer, writeDate, hit,
+               row_number() over(order by no desc) as rNum
+           from Board
+     ) mb
+    where rNum between #{displayPost} and #{postNum}
+        order by no desc
+	</select>
+	
+	<!-- 게시물 목록 + 페이징 + 검색 -->
+<select id="listPageSearch" parameterType="hashMap" resultType="com.board.vo.BoardVO">
+select no, title, content, writer, writeDate, hit
+       from (
+           select no, title, content, writer, writeDate, hit,
+               row_number() over(order by no desc) as rNum
+           from Board
+      <include refid="search"></include>
+     ) mb
+    where rNum between #{displayPost} and #{postNum}
+        order by no desc
+</select>
+
+<sql id="search">
+ <if test="searchType != null">
+  <if test="searchType == 't'.toString()">where title like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'c'.toString()">where content like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'w'.toString()">where writer like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'tc'.toString()">where (title like '%' || #{keyword} || '%') or (content like '%' || #{keyword} || '%')</if>
+ </if>
+</sql>
+
+<!-- 게시물 총 개수 + 검색 전용 -->
+<select id="searchCount" parameterType="hashMap" resultType="int">
+ select count(no)
+       from board       
+      <include refid="search2"></include>
+    
+</select>
+
+<sql id="search2">
+ <if test="searchType != null">
+  <if test="searchType == 't'.toString()">where title like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'c'.toString()">where content like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'w'.toString()">where writer like '%' || #{keyword} || '%'</if>
+  <if test="searchType == 'tc'.toString()">where (title like '%' || #{keyword} || '%') or (content like '%' || #{keyword} || '%')</if>
+ </if>
+</sql>
+
+  <!-- 댓글 조회 -->
+<select id="replyList" parameterType="int" resultType="com.board.vo.ReplyVO">
+	select
+		rno, bno, writer, content, write_Date
+	from boardReply
+		where bno = #{bno}		
+</select>
+
+<!-- 댓글 작성 -->
+<insert id="replyWrite" parameterType="com.board.vo.ReplyVO">
+	insert into boardReply(rno, bno, writer, content, write_Date)
+		values (Rep_SEQ.NEXTVAL, #{bno}, #{writer}, #{content}, sysdate)
+		
+		<!-- 작은 따옴표 개새끼 땜에 세시간 null 오류 뜸 데이터 받는거 샵 근처에 작은 따옴표 -->
+</insert>
+	
+<!-- 댓글 수정 -->
+<update id="replyModify" parameterType="com.board.vo.ReplyVO">
+	update boardReply set
+		writer = #{writer},
+		content = #{content}
+	where rno = #{rno}
+		and bno = #{bno}	
+</update>
+
+<!-- 댓글 삭제 -->
+<delete id="replyDelete" parameterType="com.board.vo.ReplyVO">
+	delete from boardReply
+	where rno = #{rno}
+		and bno = ${bno}	
+</delete>
+
+
+
+
+</mapper>
