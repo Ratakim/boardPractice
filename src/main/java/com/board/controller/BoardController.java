@@ -102,6 +102,7 @@ public class BoardController {
 		mav.setViewName("redirect:/board/view?no="+mo.getNo());			
 		
 		return mav;
+		
 			
 	 }
 	
@@ -179,21 +180,21 @@ public class BoardController {
 		
 		 //게시물 목록 +페이징 추가 + 검색
 		@RequestMapping("/listPageSearch")
-		public ModelAndView getListPageSearch(int num,
+		public ModelAndView getListPageSearch(@RequestParam(value = "num", defaultValue = "1")int num,
 				@RequestParam(value = "searchType",required = false, defaultValue = "title") String searchType,
 			    @RequestParam(value = "keyword",required = false, defaultValue = "") String keyword) 
-						   throws Exception {
+						     throws Exception {
 			
 							
 			//게시물 총 개수
 			int count = service.searchCount(searchType, keyword);
-			System.out.println(count);		
+			//System.out.println(count); 
 			//한 페이지에 출력할 게시물 개수
-			int postNum = 10;
+			int postNum = 10; 
 			
 			//하단 페이징 번호 ([ 게시물 총 갯수 ÷ 한 페이지에 출력할 갯수 ]의 올림)
 			int pageNum = (int)Math.ceil((double)count/postNum);
-			
+			 
 			// 출력할 게시물
 		    int displayPost = (num - 1) * postNum + 1;
 		    
@@ -214,7 +215,7 @@ public class BoardController {
 		    }
 		    
 		    boolean prev = startPageNum == 1 ? false : true;
-		    boolean next = endPageNum * pageNum_cnt >= count ? false : true;
+		    boolean next = endPageNum * (pageNum_cnt * 2) >= count ? false : true;
 
 		   
 		    
@@ -222,6 +223,7 @@ public class BoardController {
 
 			ModelAndView mav = new ModelAndView();
 			mav.setViewName("/board/listPageSearch");
+			
 			mav.addObject("list", list);
 			mav.addObject("pageNum",pageNum);
 			
@@ -243,6 +245,6 @@ public class BoardController {
   }
 		
 }
-  
+   
 
   

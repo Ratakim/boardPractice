@@ -13,8 +13,8 @@ import com.board.vo.ReplyVO;
 @Controller
 @RequestMapping("/reply")
 public class ReplyController {
-	
-	@Inject
+	 
+	@Inject 
 	private ReplyService replyService;
 
 	
@@ -22,7 +22,7 @@ public class ReplyController {
 	@RequestMapping(value = "/write", method = RequestMethod.POST)
 	public String posttWirte(ReplyVO vo) throws Exception {
 		
-		replyService.write(vo);
+		 replyService.write(vo);
 		
 		return "redirect:/board/view?no=" + vo.getBno();
 	}
