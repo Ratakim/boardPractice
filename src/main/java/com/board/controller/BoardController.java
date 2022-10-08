@@ -191,10 +191,7 @@ public class BoardController {
 			//System.out.println(count); 
 			//한 페이지에 출력할 게시물 개수
 			int postNum = 10; 
-			
-			//하단 페이징 번호 ([ 게시물 총 갯수 ÷ 한 페이지에 출력할 갯수 ]의 올림)
-			int pageNum = (int)Math.ceil((double)count/postNum);
-			 
+						 
 			// 출력할 게시물
 		    int displayPost = (num - 1) * postNum + 1;
 		    
@@ -215,9 +212,7 @@ public class BoardController {
 		    }
 		    
 		    boolean prev = startPageNum == 1 ? false : true;
-		    boolean next = endPageNum * (pageNum_cnt * 2) >= count ? false : true;
-
-		   
+		    boolean next = endPageNum * (pageNum_cnt * 2) >= count ? false : true;		   
 		    
 			List<BoardVO> list = service.listPageSearch(displayPost,postNum * num, searchType, keyword);
 
@@ -225,7 +220,6 @@ public class BoardController {
 			mav.setViewName("/board/listPageSearch");
 			
 			mav.addObject("list", list);
-			mav.addObject("pageNum",pageNum);
 			
 			// 시작 및 끝 번호
 			mav.addObject("startPageNum", startPageNum);
